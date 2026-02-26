@@ -1,0 +1,120 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playwrite+CU+Guides&display=swap");
+@config "../../tailwind.config.ts";
+@import "tailwindcss";
+
+:root {
+  --background: #f2e3bb;
+  --foreground: #1a1a1a;
+
+  --primary: #005f02;
+  --primary-foreground: #ffffff;
+  --primary-hover: #004a01;
+
+  --secondary: #427a43;
+  --secondary-foreground: #ffffff;
+  --secondary-hover: #356235;
+
+  --accent: #c0b87a;
+  --accent-foreground: #1a1a1a;
+  --accent-hover: #ada86a;
+
+  --muted: #e6d8a8;
+  --border: #d6c68e;
+  --card: #ffffff;
+  --input: #ffffff;
+
+  --destructive: #b3261e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0b1a0b;
+    --foreground: #ededeb;
+
+    --primary: #1e8e23;
+    --primary-foreground: #ffffff;
+    --primary-hover: #187a1f;
+
+    --secondary: #3c6e3d;
+    --secondary-foreground: #ffffff;
+    --secondary-hover: #315c32;
+
+    --accent: #c0b87a;
+    --accent-foreground: #0b1a0b;
+    --accent-hover: #ada86a;
+
+    --muted: #1a2a1a;
+    --border: #243524;
+    --card: #132413;
+    --input: #1a2a1a;
+
+    --destructive: #cf6679;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+}
+
+.font-logo {
+  font-family: "Playwrite CU Guides", Inter, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+* {
+  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--muted);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary);
+  border: 2px solid var(--muted);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
