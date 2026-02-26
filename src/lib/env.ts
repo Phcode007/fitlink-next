@@ -1,8 +1,14 @@
-export function getApiBaseUrl(): string {
-  const baseUrl = process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_URL;
+function normalizeBaseUrl(raw: string): string {
+  const trimmed = raw.trim().replace(/\/$/, "");
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
 
-  if (baseUrl) {
-    return baseUrl.replace(/\/$/, "");
+export function getApiBaseUrl(): string {
+  const raw = process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_URL;
+
+  if (raw) {
+    return normalizeBaseUrl(raw);
   }
 
   if (process.env.NODE_ENV !== "production") {
