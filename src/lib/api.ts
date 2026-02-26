@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { SESSION_COOKIE } from "@/lib/auth";
+import { getApiBaseUrl } from "@/lib/env";
 import type {
   BodyMetric,
   DietPlan,
@@ -17,7 +18,7 @@ import type {
   WorkoutPlan,
 } from "@/lib/types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+const API_BASE_URL = getApiBaseUrl();
 
 class ApiError extends Error {
   status: number;
@@ -51,7 +52,7 @@ async function request<T>(path: string, init: RequestInit = {}, requiresAuth = t
   });
 
   if (!response.ok) {
-    let message = "Não foi possível concluir a requisição.";
+    let message = "Nao foi possivel concluir a requisicao.";
     try {
       const body = (await response.json()) as { message?: string | string[] };
       if (Array.isArray(body.message)) {
@@ -74,15 +75,23 @@ async function request<T>(path: string, init: RequestInit = {}, requiresAuth = t
 export const api = {
   auth: {
     login: (dto: LoginDto) =>
-      request<{ accessToken: string }>("/auth/login", {
-        method: "POST",
-        body: JSON.stringify(dto),
-      }, false),
+      request<{ accessToken: string }>(
+        "/auth/login",
+        {
+          method: "POST",
+          body: JSON.stringify(dto),
+        },
+        false,
+      ),
     register: (dto: RegisterDto) =>
-      request<{ accessToken: string }>("/auth/register", {
-        method: "POST",
-        body: JSON.stringify(dto),
-      }, false),
+      request<{ accessToken: string }>(
+        "/auth/register",
+        {
+          method: "POST",
+          body: JSON.stringify(dto),
+        },
+        false,
+      ),
   },
   users: {
     getMe: () => request<User>("/users/me"),

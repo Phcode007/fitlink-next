@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
+import { getApiBaseUrl } from "@/lib/env";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+const API_BASE_URL = getApiBaseUrl();
 
 export async function POST(request: Request) {
   try {
@@ -20,7 +21,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ accessToken: data.accessToken }, { status: 200 });
-  } catch {
-    return NextResponse.json({ message: "Falha de conexão com o servidor." }, { status: 502 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Falha de conexao com o servidor.";
+    return NextResponse.json({ message }, { status: 502 });
   }
 }
