@@ -15,11 +15,14 @@ export function OnboardingForm({ role }: { role: Role }) {
   const [plan, setPlan] = useState<PlanOption>("GRATUITO");
   const [bio, setBio] = useState("");
   const [yearsExperience, setYearsExperience] = useState("");
+  const [professionalRegistration, setProfessionalRegistration] = useState("");
   const [error, setError] = useState("");
   const [warnings, setWarnings] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   const isSpecialist = role === "TRAINER" || role === "NUTRITIONIST";
+  const registrationLabel = role === "TRAINER" ? "Registro profissional (CREF)" : "Registro profissional (CRN)";
+  const registrationHint = role === "TRAINER" ? "Ex: CREF 123456-G/SP" : "Ex: CRN 12345";
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -28,6 +31,11 @@ export function OnboardingForm({ role }: { role: Role }) {
 
     if (!heightCm || !weightKg) {
       setError("Informe altura e peso para continuar.");
+      return;
+    }
+
+    if (isSpecialist && !professionalRegistration.trim()) {
+      setError("Informe seu registro profissional para continuar.");
       return;
     }
 
@@ -63,6 +71,7 @@ export function OnboardingForm({ role }: { role: Role }) {
           plan,
           bio: bio || undefined,
           yearsExperience: yearsExperience ? Number(yearsExperience) : undefined,
+          professionalRegistration: professionalRegistration || undefined,
         }),
       });
 
@@ -153,6 +162,14 @@ export function OnboardingForm({ role }: { role: Role }) {
       {isSpecialist ? (
         <div className="grid gap-4 rounded-2xl border border-border bg-card p-4">
           <h2 className="text-lg font-semibold">Dados profissionais</h2>
+          <Input
+            label={registrationLabel}
+            name="professionalRegistration"
+            value={professionalRegistration}
+            onChange={(event) => setProfessionalRegistration(event.target.value)}
+            placeholder={registrationHint}
+            required
+          />
           <Input
             label="Anos de experiencia"
             name="yearsExperience"

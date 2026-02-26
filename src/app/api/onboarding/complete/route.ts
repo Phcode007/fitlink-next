@@ -11,6 +11,7 @@ type OnboardingBody = {
   plan?: "GRATUITO" | "PREMIUM";
   bio?: string;
   yearsExperience?: number;
+  professionalRegistration?: string;
 };
 
 async function apiRequest<T>(path: string, token: string, init: RequestInit = {}): Promise<T> {
@@ -31,6 +32,17 @@ async function apiRequest<T>(path: string, token: string, init: RequestInit = {}
   }
 
   return (await response.json()) as T;
+}
+
+function buildProfessionalBio(registrationLabel: string, registration: string | undefined, bio: string | undefined): string | undefined {
+  const normalizedRegistration = registration?.trim();
+  const normalizedBio = bio?.trim();
+
+  if (!normalizedRegistration && !normalizedBio) return undefined;
+  if (!normalizedRegistration) return normalizedBio;
+  if (!normalizedBio) return `${registrationLabel}: ${normalizedRegistration}`;
+
+  return `${registrationLabel}: ${normalizedRegistration}\n${normalizedBio}`;
 }
 
 export async function POST(request: Request) {
@@ -55,8 +67,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Altura e peso sao obrigatorios." }, { status: 400 });
   }
 
-  const warnings: string[] = [];
+  if ((session.role === "TRAINER" || session.role === "NUTRITIONIST") && !body.professionalRegistration?.trim()) {
+    return NextResponse.json({ message: "Registro profissional obrigatorio para especialistas." }, { status: 400 });
+  }
 
+  const warnings: string[] = [];
   const bmi = Number((weightKg / ((heightCm / 100) * (heightCm / 100))).toFixed(2));
 
   try {
@@ -99,12 +114,12 @@ export async function POST(request: Request) {
       await apiRequest("/trainers/profile", token, {
         method: "PUT",
         body: JSON.stringify({
-          bio: body.bio,
+          bio: buildProfessionalBio("CREF", body.professionalRegistration, body.bio),
           yearsExperience: body.yearsExperience,
         }),
       });
     } catch {
-      warnings.push("Nao foi possivel salvar os dados profissionais de trainer.");
+      warnings.push("Nao foi possivel salvar os dados profissionais de educacao fisica.");
     }
   }
 
@@ -113,12 +128,12 @@ export async function POST(request: Request) {
       await apiRequest("/nutritionists/profile", token, {
         method: "PUT",
         body: JSON.stringify({
-          bio: body.bio,
+          bio: buildProfessionalBio("CRN", body.professionalRegistration, body.bio),
           yearsExperience: body.yearsExperience,
         }),
       });
     } catch {
-      warnings.push("Nao foi possivel salvar os dados profissionais de nutricionista.");
+      warnings.push("Nao foi possivel salvar os dados profissionais de nutricao.");
     }
   }
 

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const SESSION_COOKIE = "fitlink_session";
-const protectedPaths = ["/dashboard", "/workouts", "/diets", "/progress", "/subscriptions", "/profile", "/onboarding"];
+const protectedPaths = ["/dashboard", "/professionals", "/workouts", "/diets", "/progress", "/subscriptions", "/profile", "/onboarding"];
 
 function hasValidJwt(token: string | undefined): boolean {
   if (!token) return false;
@@ -41,6 +41,7 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/dashboard/:path*",
+    "/professionals/:path*",
     "/workouts/:path*",
     "/diets/:path*",
     "/progress/:path*",
