@@ -137,27 +137,11 @@ export async function GET(request: Request) {
   const query = (searchParams.get("q") || "").trim().toLowerCase();
 
   try {
-    const response = await fetch(`${API_BASE_URL}/users`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-    });
+    // Buscar diretamente os profissionais nas rotas especificas
+    const professionals = await fallbackFromProfiles(token);
+    const normalized = normalizeIncomingUsers(professionals);
 
-    const body = (await response.json().catch(() => ({}))) as UsersResponseShape;
-
-    let users: SearchUser[] = [];
-
-    if (response.ok) {
-      users = normalizeIncomingUsers(extractUsers(body));
-    } else if (response.status === 403 || response.status === 404) {
-      users = await fallbackFromProfiles(token);
-    } else {
-      return NextResponse.json({ message: extractErrorMessage(body) }, { status: response.status });
-    }
-
-    const filtered = users.filter((user) => {
+    const filtered = normalized.filter((user) => {
       const roleMatch = role === "ALL" ? user.role === "TRAINER" || user.role === "NUTRITIONIST" : user.role === role;
       const baseName = (user.name || "").toLowerCase();
       const emailFallback = user.email.toLowerCase();
