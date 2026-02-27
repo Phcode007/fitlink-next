@@ -137,9 +137,31 @@ export async function GET(request: Request) {
   const query = (searchParams.get("q") || "").trim().toLowerCase();
 
   try {
-    // Buscar diretamente os profissionais nas rotas especificas
-    const professionals = await fallbackFromProfiles(token);
-    const normalized = normalizeIncomingUsers(professionals);
+    // Primeiro tentamos buscar pela rota de usuarios,
+    // filtrando apenas quem tem papel de profissional.
+    const response = await fetch(`${API_BASE_URL}/users`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    });
+
+    const body = (await response.json().catch(() => ({}))) as UsersResponseShape;
+
+    let users: SearchUser[] = [];
+
+    if (response.ok) {
+      users = normalizeIncomingUsers(extractUsers(body));
+    } else if (response.status === 403 || response.status === 404) {
+      // Se a API nao expor /users para o usuario atual,
+      // fazemos o fallback direto nas rotas de profissionais.
+      users = await fallbackFromProfiles(token);
+    } else {
+      return NextResponse.json({ message: extractErrorMessage(body) }, { status: response.status });
+    }
+
+    const normalized = normalizeIncomingUsers(users);
 
     const filtered = normalized.filter((user) => {
       const roleMatch = role === "ALL" ? user.role === "TRAINER" || user.role === "NUTRITIONIST" : user.role === role;
