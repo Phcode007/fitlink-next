@@ -75,10 +75,12 @@ export default function RegisterPage() {
     <div className="grid gap-6">
       <div className="grid gap-2">
         <h1 className="text-2xl font-semibold">Criar conta</h1>
-        <p className="text-base">Cadastre-se para acessar a plataforma.</p>
+        <p className="text-base text-foreground/80">
+          Cadastre-se para conectar treino, dieta e acompanhamento profissional em um só lugar.
+        </p>
       </div>
 
-      <form className="grid gap-4" onSubmit={handleSubmit}>
+      <form className="grid gap-5" onSubmit={handleSubmit}>
         <Input
           label="Email"
           type="email"
@@ -116,22 +118,32 @@ export default function RegisterPage() {
           <label htmlFor="role" className="text-sm font-medium">
             Perfil
           </label>
-          <select
-            id="role"
-            name="role"
-            value={role}
-            onChange={(event) => setRole(event.target.value as Role)}
-            className="h-11 rounded-xl border border-border bg-input px-3 text-base text-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-          >
-            {roles.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
+          <div className="grid gap-2 rounded-2xl border border-border bg-muted/40 p-3">
+            <select
+              id="role"
+              name="role"
+              value={role}
+              onChange={(event) => setRole(event.target.value as Role)}
+              className="h-11 rounded-xl border border-border bg-input px-3 text-base text-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            >
+              {roles.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-foreground/70">
+              Escolha se voce entra como aluno, personal trainer ou nutricionista. Isso ajuda a personalizar sua
+              experiencia.
+            </p>
+          </div>
         </div>
 
-        {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        {error ? (
+          <div className="rounded-xl border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+            {error}
+          </div>
+        ) : null}
 
         <Button type="submit" variant="primary" loading={loading} className="w-full" aria-label="Criar conta">
           Criar conta

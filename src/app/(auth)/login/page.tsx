@@ -69,7 +69,7 @@ export default function LoginPage() {
     <div className="grid gap-6">
       <div className="grid gap-2">
         <h1 className="text-2xl font-semibold">Entrar</h1>
-        <p className="text-base">Acesse sua conta FitLink.</p>
+        <p className="text-base text-foreground/80">Acesse sua conta FitLink para continuar sua jornada.</p>
       </div>
 
       <form className="grid gap-4" onSubmit={handleSubmit}>
@@ -94,7 +94,11 @@ export default function LoginPage() {
           error={passwordError || undefined}
         />
 
-        {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        {error ? (
+          <div className="rounded-xl border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+            {error}
+          </div>
+        ) : null}
 
         <Button type="submit" variant="primary" loading={loading} className="w-full" aria-label="Entrar na plataforma">
           Entrar

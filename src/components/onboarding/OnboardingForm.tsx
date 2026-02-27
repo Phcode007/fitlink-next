@@ -96,42 +96,65 @@ export function OnboardingForm({ role }: { role: Role }) {
   }
 
   return (
-    <form className="grid gap-6" onSubmit={handleSubmit}>
+    <form className="grid gap-7" onSubmit={handleSubmit}>
       <div className="grid gap-2">
         <h1 className="text-2xl font-semibold">Complete seu perfil inicial</h1>
-        <p className="text-base">Preencha os dados para personalizar sua experiencia no FitLink.</p>
+        <p className="text-base text-foreground/80">
+          Preencha os dados para personalizar sua experiencia no FitLink de acordo com seu objetivo e perfil.
+        </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Input
-          label="Altura (cm)"
-          name="heightCm"
-          type="number"
-          value={heightCm}
-          onChange={(event) => setHeightCm(event.target.value)}
-          placeholder="Ex: 175"
-          required
-          min={100}
-          max={250}
-        />
-        <Input
-          label="Peso (kg)"
-          name="weightKg"
-          type="number"
-          value={weightKg}
-          onChange={(event) => setWeightKg(event.target.value)}
-          placeholder="Ex: 78"
-          required
-          min={30}
-          max={400}
-          step="0.1"
-        />
-      </div>
+      <section className="grid gap-4 rounded-2xl border border-border bg-card/60 p-4 sm:p-5">
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <h2 className="text-base font-semibold">Dados corporais</h2>
+            <p className="text-sm text-foreground/70">Essas informacoes ajudam a ajustar treinos e recomendacoes.</p>
+          </div>
+        </div>
 
-      <div className="grid gap-3">
-        <p className="text-sm font-medium">Escolha seu plano</p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Input
+            label="Altura (cm)"
+            name="heightCm"
+            type="number"
+            value={heightCm}
+            onChange={(event) => setHeightCm(event.target.value)}
+            placeholder="Ex: 175"
+            required
+            min={100}
+            max={250}
+            hint="Informe sua altura em centimetros."
+          />
+          <Input
+            label="Peso (kg)"
+            name="weightKg"
+            type="number"
+            value={weightKg}
+            onChange={(event) => setWeightKg(event.target.value)}
+            placeholder="Ex: 78"
+            required
+            min={30}
+            max={400}
+            step="0.1"
+            hint="Informe seu peso atual em quilogramas."
+          />
+        </div>
+      </section>
+
+      <section className="grid gap-4 rounded-2xl border border-border bg-card/60 p-4 sm:p-5">
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <h2 className="text-base font-semibold">Plano de uso</h2>
+            <p className="text-sm text-foreground/70">Selecione como voce deseja comecar na plataforma.</p>
+          </div>
+        </div>
+
         <div className="grid gap-3 sm:grid-cols-2">
-          <label className={`cursor-pointer rounded-xl border p-4 ${plan === "GRATUITO" ? "border-primary bg-muted" : "border-border bg-card"}`}>
+          <label
+            className={`cursor-pointer rounded-xl border p-4 transition-colors ${
+              plan === "GRATUITO" ? "border-primary bg-muted" : "border-border bg-card"
+            }`}
+          >
             <input
               type="radio"
               name="plan"
@@ -141,10 +164,14 @@ export function OnboardingForm({ role }: { role: Role }) {
               className="sr-only"
             />
             <p className="font-semibold">Gratuito</p>
-            <p className="text-sm">Acesso basico para comecar.</p>
+            <p className="text-sm text-foreground/80">Acesso basico para comecar a registrar seu progresso.</p>
           </label>
 
-          <label className={`cursor-pointer rounded-xl border p-4 ${plan === "PREMIUM" ? "border-primary bg-muted" : "border-border bg-card"}`}>
+          <label
+            className={`cursor-pointer rounded-xl border p-4 transition-colors ${
+              plan === "PREMIUM" ? "border-primary bg-muted" : "border-border bg-card"
+            }`}
+          >
             <input
               type="radio"
               name="plan"
@@ -154,14 +181,27 @@ export function OnboardingForm({ role }: { role: Role }) {
               className="sr-only"
             />
             <p className="font-semibold">Premium</p>
-            <p className="text-sm">Recursos avancados e acompanhamento completo.</p>
+            <p className="text-sm text-foreground/80">
+              Recursos avancados, acompanhamento completo e mais insights sobre sua evolucao.
+            </p>
           </label>
         </div>
-      </div>
+      </section>
 
       {isSpecialist ? (
-        <div className="grid gap-4 rounded-2xl border border-border bg-card p-4">
-          <h2 className="text-lg font-semibold">Dados profissionais</h2>
+        <section className="grid gap-4 rounded-2xl border border-primary/40 bg-primary/5 p-4 sm:p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 className="text-base font-semibold">Dados profissionais</h2>
+              <p className="text-sm text-foreground/70">
+                Essas informacoes sao exibidas para alunos e pacientes quando voce se conecta a eles.
+              </p>
+            </div>
+            <span className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
+              Perfil profissional
+            </span>
+          </div>
+
           <Input
             label={registrationLabel}
             name="professionalRegistration"
@@ -169,6 +209,7 @@ export function OnboardingForm({ role }: { role: Role }) {
             onChange={(event) => setProfessionalRegistration(event.target.value)}
             placeholder={registrationHint}
             required
+            hint="Use o numero completo do seu registro oficial."
           />
           <Input
             label="Anos de experiencia"
@@ -179,6 +220,7 @@ export function OnboardingForm({ role }: { role: Role }) {
             placeholder="Ex: 5"
             min={0}
             max={80}
+            hint="Opcional, mas ajuda os usuarios a entenderem seu nivel de experiencia."
           />
           <div className="grid gap-2">
             <label htmlFor="bio" className="text-sm font-medium text-foreground">
@@ -191,13 +233,17 @@ export function OnboardingForm({ role }: { role: Role }) {
               value={bio}
               onChange={(event) => setBio(event.target.value)}
               className="rounded-xl border border-border bg-input px-3 py-2 text-base text-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-              placeholder="Fale sobre sua experiencia e especialidades"
+              placeholder="Fale sobre sua experiencia, metodos de trabalho e especialidades."
             />
           </div>
-        </div>
+        </section>
       ) : null}
 
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+      {error ? (
+        <div className="rounded-xl border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+          {error}
+        </div>
+      ) : null}
       {warnings.length ? (
         <div className="rounded-xl border border-border bg-muted p-4 text-sm">
           {warnings.map((warning) => (
