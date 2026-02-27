@@ -9,6 +9,7 @@ type FilterRole = "ALL" | "TRAINER" | "NUTRITIONIST";
 
 type Professional = {
   id: string;
+  name?: string | null;
   email: string;
   role: "TRAINER" | "NUTRITIONIST" | "USER" | "ADMIN";
   isActive: boolean;
@@ -65,10 +66,10 @@ export function ProfessionalSearch() {
     <div className="grid gap-6">
       <div className="grid gap-4 sm:grid-cols-[1fr_220px_auto] sm:items-end">
         <Input
-          label="Pesquisar por email"
+          label="Pesquisar por nome"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Digite parte do email"
+          placeholder="Digite o nome do profissional"
         />
 
         <div className="grid gap-2">
@@ -99,7 +100,8 @@ export function ProfessionalSearch() {
           professionals.map((professional) => (
             <Card key={professional.id} className="flex items-center justify-between" padding="sm">
               <div>
-                <p className="font-medium">{professional.email}</p>
+                <p className="font-medium">{professional.name || "Nome nao informado"}</p>
+                <p className="text-sm">{professional.email}</p>
                 <p className="text-sm">{roleLabel(professional.role)}</p>
               </div>
               <span className={`rounded-xl px-3 py-1 text-sm ${professional.isActive ? "bg-primary text-primary-foreground" : "bg-muted"}`}>

@@ -10,6 +10,7 @@ type SearchRole = "TRAINER" | "NUTRITIONIST" | "ALL";
 
 type SearchUser = {
   id: string;
+  name?: string | null;
   email: string;
   role: Role;
   isActive: boolean;
@@ -23,6 +24,8 @@ type ProfileWithUser = {
   id: string;
   user?: {
     id: string;
+    name?: string | null;
+    fullName?: string | null;
     email: string;
     role: Role;
     isActive: boolean;
@@ -32,6 +35,12 @@ type ProfileWithUser = {
 function normalizeRole(value: string | null): SearchRole {
   if (value === "TRAINER" || value === "NUTRITIONIST") return value;
   return "ALL";
+}
+
+function normalizeName(name: unknown, fullName: unknown): string | null {
+  if (typeof name === "string" && name.trim()) return name.trim();
+  if (typeof fullName === "string" && fullName.trim()) return fullName.trim();
+  return null;
 }
 
 function extractUsers(body: UsersResponseShape): SearchUser[] {
@@ -85,6 +94,7 @@ async function fallbackFromProfiles(token: string): Promise<SearchUser[]> {
           .filter((item) => item?.user?.email)
           .map((item) => ({
             id: item.user?.id ?? item.id,
+            name: normalizeName(item.user?.name, item.user?.fullName),
             email: item.user?.email ?? "",
             role,
             isActive: item.user?.isActive ?? true,
@@ -96,6 +106,13 @@ async function fallbackFromProfiles(token: string): Promise<SearchUser[]> {
   );
 
   return results.flat();
+}
+
+function normalizeIncomingUsers(users: SearchUser[]): SearchUser[] {
+  return users.map((user) => ({
+    ...user,
+    name: normalizeName((user as unknown as { name?: unknown }).name, (user as unknown as { fullName?: unknown }).fullName),
+  }));
 }
 
 export async function GET(request: Request) {
@@ -133,7 +150,7 @@ export async function GET(request: Request) {
     let users: SearchUser[] = [];
 
     if (response.ok) {
-      users = extractUsers(body);
+      users = normalizeIncomingUsers(extractUsers(body));
     } else if (response.status === 403 || response.status === 404) {
       users = await fallbackFromProfiles(token);
     } else {
@@ -142,7 +159,9 @@ export async function GET(request: Request) {
 
     const filtered = users.filter((user) => {
       const roleMatch = role === "ALL" ? user.role === "TRAINER" || user.role === "NUTRITIONIST" : user.role === role;
-      const queryMatch = query.length === 0 ? true : user.email.toLowerCase().includes(query);
+      const baseName = (user.name || "").toLowerCase();
+      const emailFallback = user.email.toLowerCase();
+      const queryMatch = query.length === 0 ? true : baseName.includes(query) || (!user.name && emailFallback.includes(query));
       return roleMatch && queryMatch;
     });
 
