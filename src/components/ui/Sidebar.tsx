@@ -19,6 +19,8 @@ type NavItem = {
 const navItems: NavItem[] = [
   { label: "Painel", href: "/dashboard", roles: ["USER", "TRAINER", "NUTRITIONIST", "ADMIN"] },
   { label: "Buscar profissionais", href: "/professionals", roles: ["USER"] },
+  { label: "Meus alunos", href: "/clients", roles: ["TRAINER"] },
+  { label: "Meus pacientes", href: "/clients", roles: ["NUTRITIONIST"] },
   { label: "Treinos", href: "/workouts", roles: ["USER", "TRAINER", "ADMIN"] },
   { label: "Dietas", href: "/diets", roles: ["USER", "NUTRITIONIST", "ADMIN"] },
   { label: "Progresso", href: "/progress", roles: ["USER", "TRAINER", "NUTRITIONIST", "ADMIN"] },
@@ -48,7 +50,7 @@ export function Sidebar({ role, isOpen, onClose }: SidebarProps) {
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
             return (
               <Link
-                key={item.href}
+                key={`${item.href}-${item.label}`}
                 href={item.href}
                 onClick={onClose}
                 className={`rounded-xl px-4 py-3 text-base font-medium ${

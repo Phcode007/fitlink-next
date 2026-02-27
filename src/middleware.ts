@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const SESSION_COOKIE = "fitlink_session";
-const protectedPaths = ["/dashboard", "/professionals", "/workouts", "/diets", "/progress", "/subscriptions", "/profile", "/onboarding"];
+const protectedPaths = ["/dashboard", "/professionals", "/clients", "/workouts", "/diets", "/progress", "/subscriptions", "/profile", "/onboarding"];
 
 function hasValidJwt(token: string | undefined): boolean {
   if (!token) return false;
@@ -42,6 +42,7 @@ export const config = {
   matcher: [
     "/dashboard/:path*",
     "/professionals/:path*",
+    "/clients/:path*",
     "/workouts/:path*",
     "/diets/:path*",
     "/progress/:path*",
