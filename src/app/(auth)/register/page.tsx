@@ -11,6 +11,7 @@ const roles: Role[] = ["USER", "TRAINER", "NUTRITIONIST"];
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -18,6 +19,7 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const nameError = name.length > 0 && name.trim().length < 3 ? "Informe seu nome completo." : "";
   const emailError = email.length > 0 && !/^\S+@\S+\.\S+$/.test(email) ? "Informe um email valido." : "";
   const passwordError = password.length > 0 && password.length < 6 ? "A senha precisa ter pelo menos 6 caracteres." : "";
   const confirmError = confirmPassword.length > 0 && confirmPassword !== password ? "As senhas nao coincidem." : "";
@@ -26,12 +28,12 @@ export default function RegisterPage() {
     event.preventDefault();
     setError("");
 
-    if (!email || !password || !confirmPassword) {
+    if (!name || !email || !password || !confirmPassword) {
       setError("Preencha todos os campos.");
       return;
     }
 
-    if (emailError || passwordError || confirmError) {
+    if (nameError || emailError || passwordError || confirmError) {
       setError("Revise os campos do formulario.");
       return;
     }
@@ -41,7 +43,7 @@ export default function RegisterPage() {
       const authResponse = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, role }),
+        body: JSON.stringify({ name, email, password, role }),
       });
 
       const authBody = (await authResponse.json().catch(() => ({}))) as { accessToken?: string; message?: string };
@@ -81,6 +83,17 @@ export default function RegisterPage() {
       </div>
 
       <form className="grid gap-5" onSubmit={handleSubmit}>
+        <Input
+          label="Nome completo"
+          type="text"
+          name="name"
+          autoComplete="name"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          required
+          error={nameError || undefined}
+        />
+
         <Input
           label="Email"
           type="email"

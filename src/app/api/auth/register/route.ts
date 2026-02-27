@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { getApiBaseUrl } from "@/lib/env";
-import type { Role } from "@/lib/types";
+import type { RegisterDto } from "@/lib/types";
 
 const API_BASE_URL = getApiBaseUrl();
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as { email?: string; password?: string; role?: Role };
+    const body = (await request.json()) as Partial<RegisterDto>;
 
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: "POST",
