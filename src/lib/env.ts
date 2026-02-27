@@ -15,5 +15,5 @@ export function getApiBaseUrl(): string {
     return "http://localhost:3000";
   }
 
-  throw new Error("API_BASE_URL nao configurada no ambiente de producao.");
+  throw new Error("API_BASE_URL não configurada no ambiente de produção.");
 }

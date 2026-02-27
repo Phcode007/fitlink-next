@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 import type { DietPlan } from "@/lib/types";
 
 export function DietManager({ initialDiets }: { initialDiets: DietPlan[] }) {
@@ -24,13 +26,13 @@ export function DietManager({ initialDiets }: { initialDiets: DietPlan[] }) {
     setSuccess("");
 
     if (!title.trim()) {
-      setError("Informe o titulo da dieta.");
+      setError("Informe o título da dieta.");
       return;
     }
 
     const caloriesValue = dailyCalories ? Number(dailyCalories) : undefined;
     if (dailyCalories && !Number.isFinite(caloriesValue)) {
-      setError("Calorias diarias invalidas.");
+      setError("Calorias diárias inválidas.");
       return;
     }
 
@@ -49,7 +51,7 @@ export function DietManager({ initialDiets }: { initialDiets: DietPlan[] }) {
 
       const body = (await response.json().catch(() => ({}))) as { message?: string };
       if (!response.ok) {
-        setError(body.message || "Nao foi possivel criar dieta.");
+        setError(body.message || "Não foi possível criar dieta.");
         return;
       }
 
@@ -59,7 +61,7 @@ export function DietManager({ initialDiets }: { initialDiets: DietPlan[] }) {
       setSuccess("Dieta criada com sucesso.");
       router.refresh();
     } catch {
-      setError("Falha de conexao ao criar dieta.");
+      setError("Falha de conexão ao criar dieta.");
     } finally {
       setLoadingCreate(false);
     }
@@ -82,14 +84,14 @@ export function DietManager({ initialDiets }: { initialDiets: DietPlan[] }) {
 
       const body = (await response.json().catch(() => ({}))) as { message?: string };
       if (!response.ok) {
-        setError(body.message || "Nao foi possivel atualizar dieta.");
+        setError(body.message || "Não foi possível atualizar dieta.");
         return;
       }
 
       setSuccess("Dieta atualizada com sucesso.");
       router.refresh();
     } catch {
-      setError("Falha de conexao ao atualizar dieta.");
+      setError("Falha de conexão ao atualizar dieta.");
     } finally {
       setSavingId(null);
     }
@@ -110,14 +112,14 @@ export function DietManager({ initialDiets }: { initialDiets: DietPlan[] }) {
 
       const body = (await response.json().catch(() => ({}))) as { message?: string };
       if (!response.ok) {
-        setError(body.message || "Nao foi possivel excluir dieta.");
+        setError(body.message || "Não foi possível excluir dieta.");
         return;
       }
 
-      setSuccess("Dieta excluida com sucesso.");
+      setSuccess("Dieta excluída com sucesso.");
       router.refresh();
     } catch {
-      setError("Falha de conexao ao excluir dieta.");
+      setError("Falha de conexão ao excluir dieta.");
     } finally {
       setDeletingId(null);
     }
@@ -128,24 +130,24 @@ export function DietManager({ initialDiets }: { initialDiets: DietPlan[] }) {
       <Card>
         <form className="grid gap-4" onSubmit={handleCreate}>
           <h2 className="text-lg font-semibold">Criar nova dieta</h2>
-          <input
+          <Input
+            label="Título da dieta"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            className="h-11 rounded-xl border border-border bg-input px-3 text-base"
-            placeholder="Titulo da dieta"
+            placeholder="Ex: Dieta hipocalórica"
           />
-          <textarea
+          <Textarea
+            label="Descrição"
             value={description}
             onChange={(event) => setDescription(event.target.value)}
-            className="rounded-xl border border-border bg-input px-3 py-2 text-base"
             rows={3}
-            placeholder="Descricao"
+            placeholder="Descreva as refeições e orientações gerais"
           />
-          <input
+          <Input
+            label="Calorias diárias"
             value={dailyCalories}
             onChange={(event) => setDailyCalories(event.target.value)}
-            className="h-11 rounded-xl border border-border bg-input px-3 text-base"
-            placeholder="Calorias diarias"
+            placeholder="Ex: 2000"
             type="number"
             min={0}
           />
@@ -158,18 +160,30 @@ export function DietManager({ initialDiets }: { initialDiets: DietPlan[] }) {
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
       {success ? <p className="text-sm text-primary">{success}</p> : null}
 
-      <div className="grid gap-4">
-        {initialDiets.map((diet) => (
-          <DietEditor
-            key={diet.id}
-            diet={diet}
-            onSave={handleEdit}
-            onDelete={handleDelete}
-            loadingSave={savingId === diet.id}
-            loadingDelete={deletingId === diet.id}
-          />
-        ))}
-      </div>
+      {initialDiets.length === 0 ? (
+        <Card>
+          <div className="flex flex-col items-center gap-3 py-6 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/30" aria-hidden="true">
+              <path d="M12 2a7 7 0 0 1 7 7c0 4-3 6-3 9H8c0-3-3-5-3-9a7 7 0 0 1 7-7Z" /><path d="M8.5 18h7" /><path d="M8 22h8" />
+            </svg>
+            <p className="text-sm text-foreground/60">Nenhuma dieta cadastrada ainda.</p>
+            <p className="text-xs text-foreground/40">Use o formulário acima para criar sua primeira dieta.</p>
+          </div>
+        </Card>
+      ) : (
+        <div className="grid gap-4">
+          {initialDiets.map((diet) => (
+            <DietEditor
+              key={diet.id}
+              diet={diet}
+              onSave={handleEdit}
+              onDelete={handleDelete}
+              loadingSave={savingId === diet.id}
+              loadingDelete={deletingId === diet.id}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -194,21 +208,21 @@ function DietEditor({
 
   return (
     <Card className="grid gap-3">
-      <input
+      <Input
+        label="Título"
         value={title}
         onChange={(event) => setTitle(event.target.value)}
-        className="h-11 rounded-xl border border-border bg-input px-3 text-base"
       />
-      <textarea
+      <Textarea
+        label="Descrição"
         value={description}
         onChange={(event) => setDescription(event.target.value)}
-        className="rounded-xl border border-border bg-input px-3 py-2 text-base"
         rows={3}
       />
-      <input
+      <Input
+        label="Calorias diárias"
         value={dailyCalories}
         onChange={(event) => setDailyCalories(event.target.value)}
-        className="h-11 rounded-xl border border-border bg-input px-3 text-base"
         type="number"
         min={0}
       />
@@ -231,7 +245,7 @@ function DietEditor({
           }
           aria-label="Salvar dieta"
         >
-          Salvar alteracoes
+          Salvar alterações
         </Button>
         <Button
           type="button"

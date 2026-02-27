@@ -1,18 +1,12 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { SESSION_COOKIE } from "@/lib/auth";
 import { getApiBaseUrl } from "@/lib/env";
+import { withAuth } from "@/lib/with-auth";
 
 const API_BASE_URL = getApiBaseUrl();
 
-export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE)?.value;
+type Ctx = { params: Promise<{ id: string }> };
 
-  if (!token) {
-    return NextResponse.json({ message: "Sessao invalida." }, { status: 401 });
-  }
-
+export const PUT = withAuth<Ctx>(async (request, token, context) => {
   const { id } = await context.params;
   const body = (await request.json().catch(() => ({}))) as {
     title?: string;
@@ -39,18 +33,11 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
 
     return NextResponse.json(responseBody, { status: 200 });
   } catch {
-    return NextResponse.json({ message: "Falha de conexao com o servidor." }, { status: 502 });
+    return NextResponse.json({ message: "Falha de conexão com o servidor." }, { status: 502 });
   }
-}
+});
 
-export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE)?.value;
-
-  if (!token) {
-    return NextResponse.json({ message: "Sessao invalida." }, { status: 401 });
-  }
-
+export const DELETE = withAuth<Ctx>(async (_request, token, context) => {
   const { id } = await context.params;
 
   try {
@@ -70,6 +57,6 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
 
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch {
-    return NextResponse.json({ message: "Falha de conexao com o servidor." }, { status: 502 });
+    return NextResponse.json({ message: "Falha de conexão com o servidor." }, { status: 502 });
   }
-}
+});

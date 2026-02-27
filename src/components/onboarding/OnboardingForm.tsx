@@ -43,19 +43,19 @@ export function OnboardingForm({ role }: { role: Role }) {
     const weight = Number(weightKg);
 
     if (!Number.isFinite(height) || height < 100 || height > 250) {
-      setError("Altura invalida. Use um valor entre 100 e 250 cm.");
+      setError("Altura inválida. Use um valor entre 100 e 250 cm.");
       return;
     }
 
     if (!Number.isFinite(weight) || weight < 30 || weight > 400) {
-      setError("Peso invalido. Use um valor entre 30 e 400 kg.");
+      setError("Peso inválido. Use um valor entre 30 e 400 kg.");
       return;
     }
 
     if (isSpecialist && yearsExperience) {
       const years = Number(yearsExperience);
       if (!Number.isFinite(years) || years < 0 || years > 80) {
-        setError("Experiencia invalida. Use um valor entre 0 e 80 anos.");
+        setError("Experiência inválida. Use um valor entre 0 e 80 anos.");
         return;
       }
     }
@@ -78,7 +78,7 @@ export function OnboardingForm({ role }: { role: Role }) {
       const body = (await response.json().catch(() => ({}))) as { message?: string; warnings?: string[] };
 
       if (!response.ok) {
-        setError(body.message || "Nao foi possivel concluir o onboarding.");
+        setError(body.message || "Não foi possível concluir o onboarding.");
         return;
       }
 
@@ -89,7 +89,7 @@ export function OnboardingForm({ role }: { role: Role }) {
       router.push("/dashboard");
       router.refresh();
     } catch {
-      setError("Falha de conexao ao concluir onboarding.");
+      setError("Falha de conexão ao concluir onboarding.");
     } finally {
       setLoading(false);
     }
@@ -100,7 +100,7 @@ export function OnboardingForm({ role }: { role: Role }) {
       <div className="grid gap-2">
         <h1 className="text-2xl font-semibold">Complete seu perfil inicial</h1>
         <p className="text-base text-foreground/80">
-          Preencha os dados para personalizar sua experiencia no FitLink de acordo com seu objetivo e perfil.
+          Preencha os dados para personalizar sua experiência no FitLink de acordo com seu objetivo e perfil.
         </p>
       </div>
 
@@ -108,7 +108,7 @@ export function OnboardingForm({ role }: { role: Role }) {
         <div className="flex items-center justify-between gap-2">
           <div>
             <h2 className="text-base font-semibold">Dados corporais</h2>
-            <p className="text-sm text-foreground/70">Essas informacoes ajudam a ajustar treinos e recomendacoes.</p>
+            <p className="text-sm text-foreground/70">Essas informações ajudam a ajustar treinos e recomendações.</p>
           </div>
         </div>
 
@@ -123,7 +123,7 @@ export function OnboardingForm({ role }: { role: Role }) {
             required
             min={100}
             max={250}
-            hint="Informe sua altura em centimetros."
+            hint="Informe sua altura em centímetros."
           />
           <Input
             label="Peso (kg)"
@@ -145,7 +145,7 @@ export function OnboardingForm({ role }: { role: Role }) {
         <div className="flex items-center justify-between gap-2">
           <div>
             <h2 className="text-base font-semibold">Plano de uso</h2>
-            <p className="text-sm text-foreground/70">Selecione como voce deseja comecar na plataforma.</p>
+            <p className="text-sm text-foreground/70">Selecione como você deseja começar na plataforma.</p>
           </div>
         </div>
 
@@ -164,7 +164,7 @@ export function OnboardingForm({ role }: { role: Role }) {
               className="sr-only"
             />
             <p className="font-semibold">Gratuito</p>
-            <p className="text-sm text-foreground/80">Acesso basico para comecar a registrar seu progresso.</p>
+            <p className="text-sm text-foreground/80">Acesso básico para começar a registrar seu progresso.</p>
           </label>
 
           <label
@@ -182,7 +182,7 @@ export function OnboardingForm({ role }: { role: Role }) {
             />
             <p className="font-semibold">Premium</p>
             <p className="text-sm text-foreground/80">
-              Recursos avancados, acompanhamento completo e mais insights sobre sua evolucao.
+              Recursos avançados, acompanhamento completo e mais insights sobre sua evolução.
             </p>
           </label>
         </div>
@@ -194,7 +194,7 @@ export function OnboardingForm({ role }: { role: Role }) {
             <div>
               <h2 className="text-base font-semibold">Dados profissionais</h2>
               <p className="text-sm text-foreground/70">
-                Essas informacoes sao exibidas para alunos e pacientes quando voce se conecta a eles.
+                Essas informações são exibidas para alunos e pacientes quando você se conecta a eles.
               </p>
             </div>
             <span className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
@@ -209,10 +209,10 @@ export function OnboardingForm({ role }: { role: Role }) {
             onChange={(event) => setProfessionalRegistration(event.target.value)}
             placeholder={registrationHint}
             required
-            hint="Use o numero completo do seu registro oficial."
+            hint="Use o número completo do seu registro oficial."
           />
           <Input
-            label="Anos de experiencia"
+            label="Anos de experiência"
             name="yearsExperience"
             type="number"
             value={yearsExperience}
@@ -220,7 +220,7 @@ export function OnboardingForm({ role }: { role: Role }) {
             placeholder="Ex: 5"
             min={0}
             max={80}
-            hint="Opcional, mas ajuda os usuarios a entenderem seu nivel de experiencia."
+            hint="Opcional, mas ajuda os usuários a entenderem seu nível de experiência."
           />
           <div className="grid gap-2">
             <label htmlFor="bio" className="text-sm font-medium text-foreground">
@@ -233,7 +233,7 @@ export function OnboardingForm({ role }: { role: Role }) {
               value={bio}
               onChange={(event) => setBio(event.target.value)}
               className="rounded-xl border border-border bg-input px-3 py-2 text-base text-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-              placeholder="Fale sobre sua experiencia, metodos de trabalho e especialidades."
+              placeholder="Fale sobre sua experiência, métodos de trabalho e especialidades."
             />
           </div>
         </section>

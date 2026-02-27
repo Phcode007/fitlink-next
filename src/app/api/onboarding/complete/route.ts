@@ -49,14 +49,14 @@ export async function POST(request: Request) {
   const session = await getSession();
 
   if (!session) {
-    return NextResponse.json({ message: "Sessao invalida." }, { status: 401 });
+    return NextResponse.json({ message: "Sessão inválida." }, { status: 401 });
   }
 
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
 
   if (!token) {
-    return NextResponse.json({ message: "Token de autenticacao ausente." }, { status: 401 });
+    return NextResponse.json({ message: "Token de autenticação ausente." }, { status: 401 });
   }
 
   const body = (await request.json().catch(() => ({}))) as OnboardingBody;
@@ -64,11 +64,11 @@ export async function POST(request: Request) {
   const weightKg = Number(body.weightKg);
 
   if (!Number.isFinite(heightCm) || !Number.isFinite(weightKg)) {
-    return NextResponse.json({ message: "Altura e peso sao obrigatorios." }, { status: 400 });
+    return NextResponse.json({ message: "Altura e peso são obrigatórios." }, { status: 400 });
   }
 
   if ((session.role === "TRAINER" || session.role === "NUTRITIONIST") && !body.professionalRegistration?.trim()) {
-    return NextResponse.json({ message: "Registro profissional obrigatorio para especialistas." }, { status: 400 });
+    return NextResponse.json({ message: "Registro profissional obrigatório para especialistas." }, { status: 400 });
   }
 
   const warnings: string[] = [];
@@ -86,10 +86,10 @@ export async function POST(request: Request) {
         }),
       });
     } else {
-      warnings.push("Nao foi encontrado registro de progresso para atualizar altura e peso.");
+      warnings.push("Não foi encontrado registro de progresso para atualizar altura e peso.");
     }
   } catch {
-    warnings.push("Nao foi possivel salvar altura e peso agora.");
+    warnings.push("Não foi possível salvar altura e peso agora.");
   }
 
   try {
@@ -103,10 +103,10 @@ export async function POST(request: Request) {
         body: JSON.stringify({ planName, status }),
       });
     } else {
-      warnings.push("Nao foi encontrada assinatura para atualizar o plano.");
+      warnings.push("Não foi encontrada assinatura para atualizar o plano.");
     }
   } catch {
-    warnings.push("Nao foi possivel atualizar o plano agora.");
+    warnings.push("Não foi possível atualizar o plano agora.");
   }
 
   if (session.role === "TRAINER") {
@@ -119,7 +119,7 @@ export async function POST(request: Request) {
         }),
       });
     } catch {
-      warnings.push("Nao foi possivel salvar os dados profissionais de educacao fisica.");
+      warnings.push("Não foi possível salvar os dados profissionais de educação física.");
     }
   }
 
@@ -133,7 +133,7 @@ export async function POST(request: Request) {
         }),
       });
     } catch {
-      warnings.push("Nao foi possivel salvar os dados profissionais de nutricao.");
+      warnings.push("Não foi possível salvar os dados profissionais de nutrição.");
     }
   }
 

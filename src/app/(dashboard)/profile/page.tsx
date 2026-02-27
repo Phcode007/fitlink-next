@@ -21,7 +21,7 @@ export default async function ProfilePage() {
             </p>
           </div>
         ) : (
-          <p className="text-sm">Nao foi possivel carregar seu perfil.</p>
+          <p className="text-sm">Não foi possível carregar seu perfil.</p>
         )}
       </Card>
     </div>

@@ -1,7 +1,23 @@
 import { cookies } from "next/headers";
+import { jwtVerify } from "jose";
 import type { JwtPayload, Role } from "@/lib/types";
 
 const SESSION_COOKIE = "fitlink_session";
+
+function getJwtSecret(): Uint8Array {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("JWT_SECRET não configurado.");
+  return new TextEncoder().encode(secret);
+}
+
+async function verifyJwt(token: string): Promise<JwtPayload | null> {
+  try {
+    const { payload } = await jwtVerify(token, getJwtSecret());
+    return payload as unknown as JwtPayload;
+  } catch {
+    return null;
+  }
+}
 
 function decodeBase64Url(value: string): string {
   const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
@@ -52,9 +68,15 @@ export async function getSession(): Promise<JwtPayload | null> {
   const token = await getToken();
   if (!token) return null;
 
-  const payload = decodeJwt(token);
-  if (!payload) return null;
+  if (typeof window !== "undefined") {
+    const payload = decodeJwt(token);
+    if (!payload) return null;
+    if (payload.exp && payload.exp * 1000 < Date.now()) return null;
+    return payload;
+  }
 
+  const payload = await verifyJwt(token);
+  if (!payload) return null;
   if (payload.exp && payload.exp * 1000 < Date.now()) return null;
 
   return payload;
@@ -97,4 +119,4 @@ export async function hasRole(role: Role): Promise<boolean> {
   return session?.role === role;
 }
 
-export { SESSION_COOKIE, decodeJwt };
+export { SESSION_COOKIE, decodeJwt, verifyJwt };

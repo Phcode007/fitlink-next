@@ -35,14 +35,14 @@ export function Sidebar({ role, isOpen, onClose }: SidebarProps) {
   return (
     <>
       <div
-        className={`fixed inset-0 z-30 bg-foreground/40 lg:hidden ${isOpen ? "block" : "hidden"}`}
+        className={`fixed inset-0 z-30 bg-foreground/40 lg:hidden transition-opacity duration-300 ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
         onClick={onClose}
         aria-hidden="true"
       />
       <aside
-        className={`fixed left-0 top-0 z-40 flex h-full w-72 flex-col border-r border-border bg-muted p-6 lg:static lg:z-auto lg:block lg:w-72 ${
+        className={`fixed left-0 top-0 z-40 flex h-full w-72 flex-col border-r border-border bg-muted p-6 transition-transform duration-300 ease-in-out lg:static lg:z-auto lg:block lg:w-72 lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0`}
+        }`}
       >
         <div className="font-logo mb-8 text-2xl font-semibold text-primary">FitLink</div>
         <nav className="grid gap-2">

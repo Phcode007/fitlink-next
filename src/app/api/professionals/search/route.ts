@@ -68,7 +68,7 @@ function extractErrorMessage(body: UsersResponseShape): string {
     return message;
   }
 
-  return "Nao foi possivel consultar profissionais.";
+  return "Não foi possível consultar profissionais.";
 }
 
 async function fallbackFromProfiles(token: string): Promise<SearchUser[]> {
@@ -118,18 +118,18 @@ function normalizeIncomingUsers(users: SearchUser[]): SearchUser[] {
 export async function GET(request: Request) {
   const session = await getSession();
   if (!session) {
-    return NextResponse.json({ message: "Sessao invalida." }, { status: 401 });
+    return NextResponse.json({ message: "Sessão inválida." }, { status: 401 });
   }
 
   if (session.role !== "USER") {
-    return NextResponse.json({ message: "A busca de profissionais e exclusiva para usuarios." }, { status: 403 });
+    return NextResponse.json({ message: "A busca de profissionais é exclusiva para usuários." }, { status: 403 });
   }
 
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
 
   if (!token) {
-    return NextResponse.json({ message: "Sessao invalida." }, { status: 401 });
+    return NextResponse.json({ message: "Sessão inválida." }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
@@ -173,6 +173,6 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ professionals: filtered }, { status: 200 });
   } catch {
-    return NextResponse.json({ message: "Falha de conexao com o servidor." }, { status: 502 });
+    return NextResponse.json({ message: "Falha de conexão com o servidor." }, { status: 502 });
   }
 }

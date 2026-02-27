@@ -13,7 +13,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const emailError = email.length > 0 && !/^\S+@\S+\.\S+$/.test(email) ? "Informe um email valido." : "";
+  const emailError = email.length > 0 && !/^\S+@\S+\.\S+$/.test(email) ? "Informe um e-mail válido." : "";
   const passwordError = password.length > 0 && password.length < 6 ? "A senha precisa ter pelo menos 6 caracteres." : "";
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -21,12 +21,12 @@ export default function LoginPage() {
     setError("");
 
     if (!email || !password) {
-      setError("Preencha email e senha.");
+      setError("Preencha e-mail e senha.");
       return;
     }
 
     if (emailError || passwordError) {
-      setError("Revise os campos do formulario.");
+      setError("Revise os campos do formulário.");
       return;
     }
 
@@ -41,7 +41,7 @@ export default function LoginPage() {
       const authBody = (await authResponse.json().catch(() => ({}))) as { accessToken?: string; message?: string };
 
       if (!authResponse.ok || !authBody.accessToken) {
-        setError(authBody.message || "Credenciais invalidas.");
+        setError(authBody.message || "Credenciais inválidas.");
         return;
       }
 
@@ -52,14 +52,14 @@ export default function LoginPage() {
       });
 
       if (!sessionResponse.ok) {
-        setError("Nao foi possivel iniciar sessao.");
+        setError("Não foi possível iniciar sessão.");
         return;
       }
 
       router.push("/dashboard");
       router.refresh();
     } catch {
-      setError("Nao foi possivel fazer login. Tente novamente.");
+      setError("Não foi possível fazer login. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -74,7 +74,7 @@ export default function LoginPage() {
 
       <form className="grid gap-4" onSubmit={handleSubmit}>
         <Input
-          label="Email"
+          label="E-mail"
           name="email"
           type="email"
           autoComplete="email"
@@ -106,7 +106,7 @@ export default function LoginPage() {
       </form>
 
       <p className="text-sm">
-        Ainda nao tem conta?{" "}
+        Ainda não tem conta?{" "}
         <Link href="/register" className="font-medium text-primary hover:text-primary-hover">
           Cadastre-se
         </Link>

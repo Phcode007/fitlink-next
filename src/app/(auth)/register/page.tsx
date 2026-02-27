@@ -7,7 +7,13 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import type { Role } from "@/lib/types";
 
-const roles: Role[] = ["USER", "TRAINER", "NUTRITIONIST"];
+type RoleOption = { value: Role; label: string; description: string };
+
+const roleOptions: RoleOption[] = [
+  { value: "USER", label: "Aluno", description: "Acompanhe treinos, dietas e seu progresso." },
+  { value: "TRAINER", label: "Personal Trainer", description: "Gerencie alunos e planos de treino." },
+  { value: "NUTRITIONIST", label: "Nutricionista", description: "Gerencie pacientes e planos alimentares." },
+];
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -20,9 +26,9 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
 
   const nameError = name.length > 0 && name.trim().length < 3 ? "Informe seu nome completo." : "";
-  const emailError = email.length > 0 && !/^\S+@\S+\.\S+$/.test(email) ? "Informe um email valido." : "";
+  const emailError = email.length > 0 && !/^\S+@\S+\.\S+$/.test(email) ? "Informe um e-mail válido." : "";
   const passwordError = password.length > 0 && password.length < 6 ? "A senha precisa ter pelo menos 6 caracteres." : "";
-  const confirmError = confirmPassword.length > 0 && confirmPassword !== password ? "As senhas nao coincidem." : "";
+  const confirmError = confirmPassword.length > 0 && confirmPassword !== password ? "As senhas não coincidem." : "";
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -34,7 +40,7 @@ export default function RegisterPage() {
     }
 
     if (nameError || emailError || passwordError || confirmError) {
-      setError("Revise os campos do formulario.");
+      setError("Revise os campos do formulário.");
       return;
     }
 
@@ -49,7 +55,7 @@ export default function RegisterPage() {
       const authBody = (await authResponse.json().catch(() => ({}))) as { accessToken?: string; message?: string };
 
       if (!authResponse.ok || !authBody.accessToken) {
-        setError(authBody.message || "Nao foi possivel criar a conta.");
+        setError(authBody.message || "Não foi possível criar a conta.");
         return;
       }
 
@@ -60,14 +66,14 @@ export default function RegisterPage() {
       });
 
       if (!sessionResponse.ok) {
-        setError("Conta criada, mas nao foi possivel iniciar sessao.");
+        setError("Conta criada, mas não foi possível iniciar sessão.");
         return;
       }
 
       router.push("/onboarding");
       router.refresh();
     } catch {
-      setError("Erro de conexao. Tente novamente.");
+      setError("Erro de conexão. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -95,7 +101,7 @@ export default function RegisterPage() {
         />
 
         <Input
-          label="Email"
+          label="E-mail"
           type="email"
           name="email"
           autoComplete="email"
@@ -128,28 +134,31 @@ export default function RegisterPage() {
         />
 
         <div className="grid gap-2">
-          <label htmlFor="role" className="text-sm font-medium">
-            Perfil
-          </label>
-          <div className="grid gap-2 rounded-2xl border border-border bg-muted/40 p-3">
-            <select
-              id="role"
-              name="role"
-              value={role}
-              onChange={(event) => setRole(event.target.value as Role)}
-              className="h-11 rounded-xl border border-border bg-input px-3 text-base text-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-            >
-              {roles.map((item) => (
-                <option key={item} value={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
-            <p className="text-xs text-foreground/70">
-              Escolha se voce entra como aluno, personal trainer ou nutricionista. Isso ajuda a personalizar sua
-              experiencia.
-            </p>
+          <p className="text-sm font-medium">Perfil</p>
+          <div className="grid gap-2 sm:grid-cols-3">
+            {roleOptions.map((option) => (
+              <label
+                key={option.value}
+                className={`cursor-pointer rounded-xl border p-4 transition-colors ${
+                  role === option.value ? "border-primary bg-muted" : "border-border bg-card"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="role"
+                  value={option.value}
+                  checked={role === option.value}
+                  onChange={() => setRole(option.value)}
+                  className="sr-only"
+                />
+                <p className="font-semibold text-sm">{option.label}</p>
+                <p className="text-xs text-foreground/70 mt-1">{option.description}</p>
+              </label>
+            ))}
           </div>
+          <p className="text-xs text-foreground/70">
+            Escolha se você entra como aluno, personal trainer ou nutricionista. Isso ajuda a personalizar sua experiência.
+          </p>
         </div>
 
         {error ? (
@@ -164,7 +173,7 @@ export default function RegisterPage() {
       </form>
 
       <p className="text-sm">
-        Ja tem conta?{" "}
+        Já tem conta?{" "}
         <Link href="/login" className="font-medium text-primary hover:text-primary-hover">
           Entrar
         </Link>
@@ -172,5 +181,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-
-

@@ -48,11 +48,10 @@ async function request<T>(path: string, init: RequestInit = {}, requiresAuth = t
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
     headers,
-    cache: "no-store",
   });
 
   if (!response.ok) {
-    let message = "Nao foi possivel concluir a requisicao.";
+    let message = "Não foi possível concluir a requisição.";
     try {
       const body = (await response.json()) as { message?: string | string[] };
       if (Array.isArray(body.message)) {
@@ -80,6 +79,7 @@ export const api = {
         {
           method: "POST",
           body: JSON.stringify(dto),
+          cache: "no-store",
         },
         false,
       ),
@@ -89,65 +89,73 @@ export const api = {
         {
           method: "POST",
           body: JSON.stringify(dto),
+          cache: "no-store",
         },
         false,
       ),
   },
   users: {
-    getMe: () => request<User>("/users/me"),
+    getMe: () => request<User>("/users/me", { next: { revalidate: 120 } } as RequestInit),
     updateMe: (dto: UpdateMeDto) =>
       request<User>("/users/me", {
         method: "PUT",
         body: JSON.stringify(dto),
+        cache: "no-store",
       }),
-    listUsers: () => request<User[]>("/users"),
+    listUsers: () => request<User[]>("/users", { next: { revalidate: 120 } } as RequestInit),
   },
   trainers: {
-    dashboard: () => request<Trainer>("/trainers/dashboard"),
+    dashboard: () => request<Trainer>("/trainers/dashboard", { next: { revalidate: 120 } } as RequestInit),
     updateProfile: (dto: Partial<Trainer>) =>
       request<Trainer>("/trainers/profile", {
         method: "PUT",
         body: JSON.stringify(dto),
+        cache: "no-store",
       }),
   },
   nutritionists: {
-    dashboard: () => request<Nutritionist>("/nutritionists/dashboard"),
+    dashboard: () => request<Nutritionist>("/nutritionists/dashboard", { next: { revalidate: 120 } } as RequestInit),
     updateProfile: (dto: Partial<Nutritionist>) =>
       request<Nutritionist>("/nutritionists/profile", {
         method: "PUT",
         body: JSON.stringify(dto),
+        cache: "no-store",
       }),
   },
   workouts: {
-    list: () => request<WorkoutPlan[]>("/workouts"),
+    list: () => request<WorkoutPlan[]>("/workouts", { next: { revalidate: 60 } } as RequestInit),
     update: (id: string, dto: UpdateWorkoutDto) =>
       request<WorkoutPlan>(`/workouts/${id}`, {
         method: "PUT",
         body: JSON.stringify(dto),
+        cache: "no-store",
       }),
   },
   diets: {
-    list: () => request<DietPlan[]>("/diets"),
+    list: () => request<DietPlan[]>("/diets", { next: { revalidate: 60 } } as RequestInit),
     update: (id: string, dto: UpdateDietDto) =>
       request<DietPlan>(`/diets/${id}`, {
         method: "PUT",
         body: JSON.stringify(dto),
+        cache: "no-store",
       }),
   },
   progress: {
-    list: () => request<BodyMetric[]>("/progress"),
+    list: () => request<BodyMetric[]>("/progress", { next: { revalidate: 30 } } as RequestInit),
     update: (id: string, dto: UpdateProgressDto) =>
       request<BodyMetric>(`/progress/${id}`, {
         method: "PUT",
         body: JSON.stringify(dto),
+        cache: "no-store",
       }),
   },
   subscriptions: {
-    list: () => request<Subscription[]>("/subscriptions"),
+    list: () => request<Subscription[]>("/subscriptions", { next: { revalidate: 30 } } as RequestInit),
     update: (id: string, dto: UpdateSubscriptionDto) =>
       request<Subscription>(`/subscriptions/${id}`, {
         method: "PUT",
         body: JSON.stringify(dto),
+        cache: "no-store",
       }),
   },
   health: {

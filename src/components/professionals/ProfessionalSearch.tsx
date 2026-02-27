@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
@@ -16,9 +16,18 @@ type Professional = {
 };
 
 function roleLabel(role: Professional["role"]): string {
-  if (role === "TRAINER") return "Educacao Fisica";
-  if (role === "NUTRITIONIST") return "Nutricao";
+  if (role === "TRAINER") return "Educação Física";
+  if (role === "NUTRITIONIST") return "Nutrição";
   return role;
+}
+
+function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(id);
+  }, [value, delay]);
+  return debounced;
 }
 
 export function ProfessionalSearch() {
@@ -28,12 +37,14 @@ export function ProfessionalSearch() {
   const [error, setError] = useState("");
   const [professionals, setProfessionals] = useState<Professional[]>([]);
 
+  const debouncedQuery = useDebounce(query, 350);
+
   const endpoint = useMemo(() => {
     const params = new URLSearchParams();
     params.set("role", role);
-    if (query.trim()) params.set("q", query.trim());
+    if (debouncedQuery.trim()) params.set("q", debouncedQuery.trim());
     return `/api/professionals/search?${params.toString()}`;
-  }, [query, role]);
+  }, [debouncedQuery, role]);
 
   const search = useCallback(async () => {
     setError("");
@@ -44,14 +55,14 @@ export function ProfessionalSearch() {
       const body = (await response.json().catch(() => ({}))) as { message?: string; professionals?: Professional[] };
 
       if (!response.ok) {
-        setError(body.message || "Nao foi possivel buscar profissionais.");
+        setError(body.message || "Não foi possível buscar profissionais.");
         setProfessionals([]);
         return;
       }
 
       setProfessionals(body.professionals || []);
     } catch {
-      setError("Falha de conexao. Tente novamente.");
+      setError("Falha de conexão. Tente novamente.");
       setProfessionals([]);
     } finally {
       setLoading(false);
@@ -83,8 +94,8 @@ export function ProfessionalSearch() {
             className="h-11 rounded-xl border border-border bg-input px-3 text-base text-foreground focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
           >
             <option value="ALL">Todos</option>
-            <option value="TRAINER">Educacao Fisica</option>
-            <option value="NUTRITIONIST">Nutricao</option>
+            <option value="TRAINER">Educação Física</option>
+            <option value="NUTRITIONIST">Nutrição</option>
           </select>
         </div>
 
@@ -100,7 +111,7 @@ export function ProfessionalSearch() {
           professionals.map((professional) => (
             <Card key={professional.id} className="flex items-center justify-between" padding="sm">
               <div>
-                <p className="font-medium">{professional.name || "Nome nao informado"}</p>
+                <p className="font-medium">{professional.name || "Nome não informado"}</p>
                 <p className="text-sm">{professional.email}</p>
                 <p className="text-sm">{roleLabel(professional.role)}</p>
               </div>
@@ -111,7 +122,20 @@ export function ProfessionalSearch() {
           ))
         ) : (
           <Card>
-            <p className="text-sm">Nenhum profissional encontrado para este filtro.</p>
+            <div className="flex flex-col items-center gap-3 py-6 text-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/30" aria-hidden="true">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+              <p className="text-sm text-foreground/60">Nenhum profissional encontrado para este filtro.</p>
+              <button
+                type="button"
+                onClick={() => { setQuery(""); setRole("ALL"); }}
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                Limpar filtros
+              </button>
+            </div>
           </Card>
         )}
       </div>

@@ -13,7 +13,7 @@ export default async function DietsPage() {
   if (session.role === "NUTRITIONIST") {
     return (
       <div className="grid gap-6">
-        <h1 className="text-2xl font-semibold">Gestao de dietas</h1>
+        <h1 className="text-2xl font-semibold">Gestão de dietas</h1>
         <DietManager initialDiets={diets} />
       </div>
     );
@@ -28,7 +28,7 @@ export default async function DietsPage() {
             diets.map((item) => (
               <li key={item.id} className="rounded-xl border border-border bg-muted p-4">
                 <p className="font-medium">{item.title}</p>
-                <p className="text-sm">{item.description ?? "Sem descricao"}</p>
+                <p className="text-sm">{item.description ?? "Sem descrição"}</p>
               </li>
             ))
           ) : (

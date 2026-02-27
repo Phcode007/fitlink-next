@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 import type { WorkoutPlan } from "@/lib/types";
 
 export function WorkoutManager({ initialWorkouts }: { initialWorkouts: WorkoutPlan[] }) {
@@ -23,7 +25,7 @@ export function WorkoutManager({ initialWorkouts }: { initialWorkouts: WorkoutPl
     setSuccess("");
 
     if (!title.trim()) {
-      setError("Informe o titulo do treino.");
+      setError("Informe o título do treino.");
       return;
     }
 
@@ -37,7 +39,7 @@ export function WorkoutManager({ initialWorkouts }: { initialWorkouts: WorkoutPl
 
       const body = (await response.json().catch(() => ({}))) as { message?: string };
       if (!response.ok) {
-        setError(body.message || "Nao foi possivel criar treino.");
+        setError(body.message || "Não foi possível criar treino.");
         return;
       }
 
@@ -46,7 +48,7 @@ export function WorkoutManager({ initialWorkouts }: { initialWorkouts: WorkoutPl
       setSuccess("Treino criado com sucesso.");
       router.refresh();
     } catch {
-      setError("Falha de conexao ao criar treino.");
+      setError("Falha de conexão ao criar treino.");
     } finally {
       setLoadingCreate(false);
     }
@@ -66,14 +68,14 @@ export function WorkoutManager({ initialWorkouts }: { initialWorkouts: WorkoutPl
 
       const body = (await response.json().catch(() => ({}))) as { message?: string };
       if (!response.ok) {
-        setError(body.message || "Nao foi possivel atualizar treino.");
+        setError(body.message || "Não foi possível atualizar treino.");
         return;
       }
 
       setSuccess("Treino atualizado com sucesso.");
       router.refresh();
     } catch {
-      setError("Falha de conexao ao atualizar treino.");
+      setError("Falha de conexão ao atualizar treino.");
     } finally {
       setSavingId(null);
     }
@@ -94,14 +96,14 @@ export function WorkoutManager({ initialWorkouts }: { initialWorkouts: WorkoutPl
 
       const body = (await response.json().catch(() => ({}))) as { message?: string };
       if (!response.ok) {
-        setError(body.message || "Nao foi possivel excluir treino.");
+        setError(body.message || "Não foi possível excluir treino.");
         return;
       }
 
-      setSuccess("Treino excluido com sucesso.");
+      setSuccess("Treino excluído com sucesso.");
       router.refresh();
     } catch {
-      setError("Falha de conexao ao excluir treino.");
+      setError("Falha de conexão ao excluir treino.");
     } finally {
       setDeletingId(null);
     }
@@ -112,18 +114,18 @@ export function WorkoutManager({ initialWorkouts }: { initialWorkouts: WorkoutPl
       <Card>
         <form className="grid gap-4" onSubmit={handleCreate}>
           <h2 className="text-lg font-semibold">Criar novo treino</h2>
-          <input
+          <Input
+            label="Título do treino"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            className="h-11 rounded-xl border border-border bg-input px-3 text-base"
-            placeholder="Titulo do treino"
+            placeholder="Ex: Treino A — Peito e Tríceps"
           />
-          <textarea
+          <Textarea
+            label="Descrição"
             value={description}
             onChange={(event) => setDescription(event.target.value)}
-            className="rounded-xl border border-border bg-input px-3 py-2 text-base"
             rows={3}
-            placeholder="Descricao"
+            placeholder="Descreva os exercícios, séries e repetições"
           />
           <Button type="submit" variant="primary" loading={loadingCreate} aria-label="Criar treino">
             Criar treino
@@ -134,18 +136,30 @@ export function WorkoutManager({ initialWorkouts }: { initialWorkouts: WorkoutPl
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
       {success ? <p className="text-sm text-primary">{success}</p> : null}
 
-      <div className="grid gap-4">
-        {initialWorkouts.map((workout) => (
-          <WorkoutEditor
-            key={workout.id}
-            workout={workout}
-            onSave={handleEdit}
-            onDelete={handleDelete}
-            loadingSave={savingId === workout.id}
-            loadingDelete={deletingId === workout.id}
-          />
-        ))}
-      </div>
+      {initialWorkouts.length === 0 ? (
+        <Card>
+          <div className="flex flex-col items-center gap-3 py-6 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-foreground/30" aria-hidden="true">
+              <path d="M6.5 6.5h11" /><path d="M6.5 17.5h11" /><path d="M3 12h1" /><path d="M20 12h1" /><rect width="4" height="8" x="1" y="8" rx="1" /><rect width="4" height="8" x="19" y="8" rx="1" />
+            </svg>
+            <p className="text-sm text-foreground/60">Nenhum treino cadastrado ainda.</p>
+            <p className="text-xs text-foreground/40">Use o formulário acima para criar seu primeiro treino.</p>
+          </div>
+        </Card>
+      ) : (
+        <div className="grid gap-4">
+          {initialWorkouts.map((workout) => (
+            <WorkoutEditor
+              key={workout.id}
+              workout={workout}
+              onSave={handleEdit}
+              onDelete={handleDelete}
+              loadingSave={savingId === workout.id}
+              loadingDelete={deletingId === workout.id}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -169,15 +183,15 @@ function WorkoutEditor({
 
   return (
     <Card className="grid gap-3">
-      <input
+      <Input
+        label="Título"
         value={title}
         onChange={(event) => setTitle(event.target.value)}
-        className="h-11 rounded-xl border border-border bg-input px-3 text-base"
       />
-      <textarea
+      <Textarea
+        label="Descrição"
         value={description}
         onChange={(event) => setDescription(event.target.value)}
-        className="rounded-xl border border-border bg-input px-3 py-2 text-base"
         rows={3}
       />
       <label className="inline-flex items-center gap-2 text-sm">
@@ -192,7 +206,7 @@ function WorkoutEditor({
           onClick={() => void onSave(workout.id, { title, description, isActive })}
           aria-label="Salvar treino"
         >
-          Salvar alteracoes
+          Salvar alterações
         </Button>
         <Button
           type="button"
