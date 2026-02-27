@@ -18,7 +18,7 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { label: "Painel", href: "/dashboard", roles: ["USER", "TRAINER", "NUTRITIONIST", "ADMIN"] },
-  { label: "Profissionais", href: "/professionals", roles: ["USER", "TRAINER", "NUTRITIONIST", "ADMIN"] },
+  { label: "Buscar profissionais", href: "/professionals", roles: ["USER"] },
   { label: "Treinos", href: "/workouts", roles: ["USER", "TRAINER", "ADMIN"] },
   { label: "Dietas", href: "/diets", roles: ["USER", "NUTRITIONIST", "ADMIN"] },
   { label: "Progresso", href: "/progress", roles: ["USER", "TRAINER", "NUTRITIONIST", "ADMIN"] },

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { SESSION_COOKIE } from "@/lib/auth";
+import { getSession, SESSION_COOKIE } from "@/lib/auth";
 import { getApiBaseUrl } from "@/lib/env";
 import type { Role } from "@/lib/types";
 
@@ -21,6 +21,15 @@ function normalizeRole(value: string | null): SearchRole {
 }
 
 export async function GET(request: Request) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ message: "Sessao invalida." }, { status: 401 });
+  }
+
+  if (session.role !== "USER") {
+    return NextResponse.json({ message: "A busca de profissionais e exclusiva para usuarios." }, { status: 403 });
+  }
+
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
 

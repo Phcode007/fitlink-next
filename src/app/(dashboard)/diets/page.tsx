@@ -1,8 +1,23 @@
+import { redirect } from "next/navigation";
 import { Card } from "@/components/ui/Card";
+import { DietManager } from "@/components/diets/DietManager";
 import { api } from "@/lib/api";
+import { getSession } from "@/lib/auth";
 
 export default async function DietsPage() {
+  const session = await getSession();
+  if (!session) redirect("/login");
+
   const diets = await api.diets.list().catch(() => []);
+
+  if (session.role === "NUTRITIONIST") {
+    return (
+      <div className="grid gap-6">
+        <h1 className="text-2xl font-semibold">Gestao de dietas</h1>
+        <DietManager initialDiets={diets} />
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-6">

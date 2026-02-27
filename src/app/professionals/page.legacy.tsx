@@ -1,7 +1,19 @@
+import { redirect } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { ProfessionalSearch } from "@/components/professionals/ProfessionalSearch";
+import { getSession } from "@/lib/auth";
 
-export default function ProfessionalsPage() {
+export default async function ProfessionalsPage() {
+  const session = await getSession();
+
+  if (!session) {
+    redirect("/login");
+  }
+
+  if (session.role !== "USER") {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="grid gap-6">
       <div className="grid gap-2">
