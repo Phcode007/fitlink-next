@@ -12,7 +12,7 @@ export function getApiBaseUrl(): string {
   }
 
   if (process.env.NODE_ENV !== "production") {
-    return "http://localhost:3000";
+    return "https://fitlink-api.onrender.com";
   }
 
   throw new Error("API_BASE_URL não configurada no ambiente de produção.");
