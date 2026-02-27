@@ -16,6 +16,7 @@ export function DietManager({ initialDiets }: { initialDiets: DietPlan[] }) {
   const [success, setSuccess] = useState("");
   const [loadingCreate, setLoadingCreate] = useState(false);
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   async function handleCreate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -94,6 +95,34 @@ export function DietManager({ initialDiets }: { initialDiets: DietPlan[] }) {
     }
   }
 
+  async function handleDelete(id: string) {
+    setError("");
+    setSuccess("");
+
+    const confirmed = window.confirm("Tem certeza que deseja excluir esta dieta?");
+    if (!confirmed) return;
+
+    try {
+      setDeletingId(id);
+      const response = await fetch(`/api/diets/${id}`, {
+        method: "DELETE",
+      });
+
+      const body = (await response.json().catch(() => ({}))) as { message?: string };
+      if (!response.ok) {
+        setError(body.message || "Nao foi possivel excluir dieta.");
+        return;
+      }
+
+      setSuccess("Dieta excluida com sucesso.");
+      router.refresh();
+    } catch {
+      setError("Falha de conexao ao excluir dieta.");
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   return (
     <div className="grid gap-6">
       <Card>
@@ -131,7 +160,14 @@ export function DietManager({ initialDiets }: { initialDiets: DietPlan[] }) {
 
       <div className="grid gap-4">
         {initialDiets.map((diet) => (
-          <DietEditor key={diet.id} diet={diet} onSave={handleEdit} loading={savingId === diet.id} />
+          <DietEditor
+            key={diet.id}
+            diet={diet}
+            onSave={handleEdit}
+            onDelete={handleDelete}
+            loadingSave={savingId === diet.id}
+            loadingDelete={deletingId === diet.id}
+          />
         ))}
       </div>
     </div>
@@ -141,11 +177,15 @@ export function DietManager({ initialDiets }: { initialDiets: DietPlan[] }) {
 function DietEditor({
   diet,
   onSave,
-  loading,
+  onDelete,
+  loadingSave,
+  loadingDelete,
 }: {
   diet: DietPlan;
   onSave: (id: string, payload: { title: string; description: string; dailyCalories?: number; isActive: boolean }) => Promise<void>;
-  loading: boolean;
+  onDelete: (id: string) => Promise<void>;
+  loadingSave: boolean;
+  loadingDelete: boolean;
 }) {
   const [title, setTitle] = useState(diet.title);
   const [description, setDescription] = useState(diet.description ?? "");
@@ -154,7 +194,11 @@ function DietEditor({
 
   return (
     <Card className="grid gap-3">
-      <input value={title} onChange={(event) => setTitle(event.target.value)} className="h-11 rounded-xl border border-border bg-input px-3 text-base" />
+      <input
+        value={title}
+        onChange={(event) => setTitle(event.target.value)}
+        className="h-11 rounded-xl border border-border bg-input px-3 text-base"
+      />
       <textarea
         value={description}
         onChange={(event) => setDescription(event.target.value)}
@@ -172,22 +216,33 @@ function DietEditor({
         <input type="checkbox" checked={isActive} onChange={(event) => setIsActive(event.target.checked)} />
         Dieta ativa
       </label>
-      <Button
-        type="button"
-        variant="secondary"
-        loading={loading}
-        onClick={() =>
-          void onSave(diet.id, {
-            title,
-            description,
-            dailyCalories: dailyCalories ? Number(dailyCalories) : undefined,
-            isActive,
-          })
-        }
-        aria-label="Salvar dieta"
-      >
-        Salvar alteracoes
-      </Button>
+      <div className="flex flex-wrap gap-3">
+        <Button
+          type="button"
+          variant="secondary"
+          loading={loadingSave}
+          onClick={() =>
+            void onSave(diet.id, {
+              title,
+              description,
+              dailyCalories: dailyCalories ? Number(dailyCalories) : undefined,
+              isActive,
+            })
+          }
+          aria-label="Salvar dieta"
+        >
+          Salvar alteracoes
+        </Button>
+        <Button
+          type="button"
+          variant="destructive"
+          loading={loadingDelete}
+          onClick={() => void onDelete(diet.id)}
+          aria-label="Excluir dieta"
+        >
+          Excluir
+        </Button>
+      </div>
     </Card>
   );
 }

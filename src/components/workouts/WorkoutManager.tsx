@@ -15,6 +15,7 @@ export function WorkoutManager({ initialWorkouts }: { initialWorkouts: WorkoutPl
   const [success, setSuccess] = useState("");
   const [loadingCreate, setLoadingCreate] = useState(false);
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   async function handleCreate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -78,6 +79,34 @@ export function WorkoutManager({ initialWorkouts }: { initialWorkouts: WorkoutPl
     }
   }
 
+  async function handleDelete(id: string) {
+    setError("");
+    setSuccess("");
+
+    const confirmed = window.confirm("Tem certeza que deseja excluir este treino?");
+    if (!confirmed) return;
+
+    try {
+      setDeletingId(id);
+      const response = await fetch(`/api/workouts/${id}`, {
+        method: "DELETE",
+      });
+
+      const body = (await response.json().catch(() => ({}))) as { message?: string };
+      if (!response.ok) {
+        setError(body.message || "Nao foi possivel excluir treino.");
+        return;
+      }
+
+      setSuccess("Treino excluido com sucesso.");
+      router.refresh();
+    } catch {
+      setError("Falha de conexao ao excluir treino.");
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   return (
     <div className="grid gap-6">
       <Card>
@@ -107,7 +136,14 @@ export function WorkoutManager({ initialWorkouts }: { initialWorkouts: WorkoutPl
 
       <div className="grid gap-4">
         {initialWorkouts.map((workout) => (
-          <WorkoutEditor key={workout.id} workout={workout} onSave={handleEdit} loading={savingId === workout.id} />
+          <WorkoutEditor
+            key={workout.id}
+            workout={workout}
+            onSave={handleEdit}
+            onDelete={handleDelete}
+            loadingSave={savingId === workout.id}
+            loadingDelete={deletingId === workout.id}
+          />
         ))}
       </div>
     </div>
@@ -117,11 +153,15 @@ export function WorkoutManager({ initialWorkouts }: { initialWorkouts: WorkoutPl
 function WorkoutEditor({
   workout,
   onSave,
-  loading,
+  onDelete,
+  loadingSave,
+  loadingDelete,
 }: {
   workout: WorkoutPlan;
   onSave: (id: string, payload: { title: string; description: string; isActive: boolean }) => Promise<void>;
-  loading: boolean;
+  onDelete: (id: string) => Promise<void>;
+  loadingSave: boolean;
+  loadingDelete: boolean;
 }) {
   const [title, setTitle] = useState(workout.title);
   const [description, setDescription] = useState(workout.description ?? "");
@@ -129,7 +169,11 @@ function WorkoutEditor({
 
   return (
     <Card className="grid gap-3">
-      <input value={title} onChange={(event) => setTitle(event.target.value)} className="h-11 rounded-xl border border-border bg-input px-3 text-base" />
+      <input
+        value={title}
+        onChange={(event) => setTitle(event.target.value)}
+        className="h-11 rounded-xl border border-border bg-input px-3 text-base"
+      />
       <textarea
         value={description}
         onChange={(event) => setDescription(event.target.value)}
@@ -140,15 +184,26 @@ function WorkoutEditor({
         <input type="checkbox" checked={isActive} onChange={(event) => setIsActive(event.target.checked)} />
         Treino ativo
       </label>
-      <Button
-        type="button"
-        variant="secondary"
-        loading={loading}
-        onClick={() => void onSave(workout.id, { title, description, isActive })}
-        aria-label="Salvar treino"
-      >
-        Salvar alteracoes
-      </Button>
+      <div className="flex flex-wrap gap-3">
+        <Button
+          type="button"
+          variant="secondary"
+          loading={loadingSave}
+          onClick={() => void onSave(workout.id, { title, description, isActive })}
+          aria-label="Salvar treino"
+        >
+          Salvar alteracoes
+        </Button>
+        <Button
+          type="button"
+          variant="destructive"
+          loading={loadingDelete}
+          onClick={() => void onDelete(workout.id)}
+          aria-label="Excluir treino"
+        >
+          Excluir
+        </Button>
+      </div>
     </Card>
   );
 }

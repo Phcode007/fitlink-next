@@ -42,3 +42,34 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
     return NextResponse.json({ message: "Falha de conexao com o servidor." }, { status: 502 });
   }
 }
+
+export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
+
+  if (!token) {
+    return NextResponse.json({ message: "Sessao invalida." }, { status: 401 });
+  }
+
+  const { id } = await context.params;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/workouts/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    });
+
+    const responseBody = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      return NextResponse.json(responseBody, { status: response.status });
+    }
+
+    return NextResponse.json({ ok: true }, { status: 200 });
+  } catch {
+    return NextResponse.json({ message: "Falha de conexao com o servidor." }, { status: 502 });
+  }
+}
